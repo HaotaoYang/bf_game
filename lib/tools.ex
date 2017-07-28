@@ -11,7 +11,7 @@ defmodule Tools do
   end
 
   def seed_random_number_generator() do
-    :rand.seed(exs1024, :erlang.timestamp()),
+    :rand.seed(:exs1024, :erlang.timestamp())
   end
 
 end
