@@ -1,11 +1,11 @@
-defmodule UsersMng do
+defmodule UserMng do
 
   use GenServer
   require Logger
 
-  @doc """
-  Start user_mng worker.
-  """
+  ## =================================================================
+  ## api
+  ## =================================================================
   def start_link({user_id, _user_name, _chip} = args) do
     GenServer.start_link(__MODULE__, args, [name: where_is(user_id)])
   end
@@ -21,7 +21,9 @@ defmodule UsersMng do
     end
   end
 
-  ## CALLBACK
+  ## =================================================================
+  ## callback
+  ## =================================================================
   def init({user_id, user_name, chip}) do
     user_state = %UserState{
       user_id: user_id,

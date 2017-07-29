@@ -10,7 +10,7 @@ defmodule UserMng.Supervisor do
   end
 
   def init([]) do
-    children = [worker(UsersMng, [], restart: :temporary)]
+    children = [worker(UserMng, [], restart: :temporary)]
     supervise children, strategy: :simple_one_for_one
   end
 end
