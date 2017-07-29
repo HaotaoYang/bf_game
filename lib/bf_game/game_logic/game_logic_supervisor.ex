@@ -6,7 +6,7 @@ defmodule GameLogic.Supervisor do
   end
 
   def init([]) do
-    children = [worker(GameLogic, [])]
+    children = [worker(GameLogic, [], restart: :transient)]
     supervise children, strategy: :one_for_one
   end
 end
