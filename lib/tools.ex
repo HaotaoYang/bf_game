@@ -10,7 +10,7 @@ defmodule Tools do
     m * 1000000000 + s * 1000 + div(ms, 1000)
   end
 
-  def seed_random_number_generator() do
+  def gen_random_seed() do
     :rand.seed(:exs1024, :erlang.timestamp())
   end
 

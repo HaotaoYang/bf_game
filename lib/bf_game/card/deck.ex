@@ -2,10 +2,10 @@ defmodule Deck do
 
   @doc """
   花色定义：
-  1. 方块
-  2. 梅花
-  3. 桃花
-  4. 黑桃
+  1. 方块         1
+  2. 梅花         2
+  3. 桃花         3
+  4. 黑桃         4
 
   牌型定义：
   1. 五小牛       13
@@ -26,46 +26,47 @@ defmodule Deck do
 
   defmodule Card do
 
-    defstruct [:suit, :rank]
+    defstruct [:rank, :suit]
 
   end
 
   def new do
-    for suit <- suits(), rank <- ranks() do
-      %Card{suit: suit, rank: rank}
+    for rank <- ranks(), suit <- suits() do
+      %Card{rank: rank, suit: suit}
     end |> Enum.shuffle
   end
 
-  def zip_card(%Deck.Card{suit: suit, rank: rank}) do
+  def pack_card(%Deck.Card{rank: rank, suit: suit}) do
     Integer.undigits([suit, rank], 16)
   end
 
-  def unzip_card(n) do
+  def unpack_card(n) do
     [suit, rank] = Integer.digits(n, 16)
-    %Deck.Card{suit: suit, rank: rank}
+    %Deck.Card{rank: rank, suit: suit}
   end
 
   def get_suit_pattern(cards) do
     cards
-    |> Enum.sort(fn(card1, card2) -> card1.rank > card2.rank end)
     |> Enum.map(fn(card) -> card_to_tuple(card) end)
+    |> Enum.sort()
+    |> Enum.reverse()
     |> do_get_suit_pattern
     |> do_tuple_to_card
   end
 
-  def do_get_suit_pattern([{s1, a}, {s2, b}, {s3, c}, {s4, d}, {s5, e}]) when a < 5 and a + b + c + d + e <= 10 do
-    {13, [{s1, a}, {s2, b}, {s3, c}, {s4, d}, {s5, e}]}
+  def do_get_suit_pattern([{a, s1}, {b, s2}, {c, s3}, {d, s4}, {e, s5}]) when a < 5 and a + b + c + d + e <= 10 do
+    {13, [{a, s1}, {b, s2}, {c, s3}, {d, s4}, {e, s5}]}
   end
-  def do_get_suit_pattern([{s1, a}, {s2, b}, {s3, c}, {s4, d}, {s5, e}]) when e > 10 do
-    {12, [{s1, a}, {s2, b}, {s3, c}, {s4, d}, {s5, e}]}
+  def do_get_suit_pattern([{a, s1}, {b, s2}, {c, s3}, {d, s4}, {e, s5}]) when e > 10 do
+    {12, [{a, s1}, {b, s2}, {c, s3}, {d, s4}, {e, s5}]}
   end
-  def do_get_suit_pattern([{s1, a}, {s2, a}, {s3, a}, {s4, a}, {s5, b}]) do
-    {11, [{s1, a}, {s2, a}, {s3, a}, {s4, a}, {s5, b}]}
+  def do_get_suit_pattern([{a, s1}, {a, s2}, {a, s3}, {a, s4}, {b, s5}]) do
+    {11, [{a, s1}, {a, s2}, {a, s3}, {a, s4}, {b, s5}]}
   end
-  def do_get_suit_pattern([{s1, a}, {s2, b}, {s3, b}, {s4, b}, {s5, b}]) do
-    {11, [{s1, a}, {s2, b}, {s3, b}, {s4, b}, {s5, b}]}
+  def do_get_suit_pattern([{a, s1}, {b, s2}, {b, s3}, {b, s4}, {b, s5}]) do
+    {11, [{a, s1}, {b, s2}, {b, s3}, {b, s4}, {b, s5}]}
   end
-  def do_get_suit_pattern([{s1, a1}, {s2, b1}, {s3, c1}, {s4, d1}, {s5, e1}]) do
+  def do_get_suit_pattern([{a1, s1}, {b1, s2}, {c1, s3}, {d1, s4}, {e1, s5}]) do
     a = get_calculate_val(a1)
     b = get_calculate_val(b1)
     c = get_calculate_val(c1)
@@ -74,55 +75,55 @@ defmodule Deck do
     cond do
       rem10(a, b, c) == 0 ->
         case rem10(d, e) == 0 do
-          true -> {10, [{s1, a1}, {s2, b1}, {s3, c1}, {s4, d1}, {s5, e1}]}
-          _ -> {rem10(d, e), [{s1, a1}, {s2, b1}, {s3, c1}, {s4, d1}, {s5, e1}]}
+          true -> {10, [{a1, s1}, {b1, s2}, {c1, s3}, {d1, s4}, {e1, s5}]}
+          _ -> {rem10(d, e), [{a1, s1}, {b1, s2}, {c1, s3}, {d1, s4}, {e1, s5}]}
         end
       rem10(a, b, d) == 0 ->
         case rem10(c, e) == 0 do
-          true -> {10, [{s1, a1}, {s2, b1}, {s4, d1}, {s3, c1}, {s5, e1}]}
-          _ -> {rem10(c, e), [{s1, a1}, {s2, b1}, {s4, d1}, {s3, c1}, {s5, e1}]}
+          true -> {10, [{a1, s1}, {b1, s2}, {d1, s4}, {c1, s3}, {e1, s5}]}
+          _ -> {rem10(c, e), [{a1, s1}, {b1, s2}, {d1, s4}, {c1, s3}, {e1, s5}]}
         end
       rem10(a, b, e) == 0 ->
         case rem10(c, d) == 0 do
-          true -> {10, [{s1, a1}, {s2, b1}, {s5, e1}, {s3, c1}, {s4, d1}]}
-          _ -> {rem10(c, d), [{s1, a1}, {s2, b1}, {s5, e1}, {s3, c1}, {s4, d1}]}
+          true -> {10, [{a1, s1}, {b1, s2}, {e1, s5}, {c1, s3}, {d1, s4}]}
+          _ -> {rem10(c, d), [{a1, s1}, {b1, s2}, {e1, s5}, {c1, s3}, {d1, s4}]}
         end
       rem10(a, c, d) == 0 ->
         case rem10(b, e) == 0 do
-          true -> {10, [{s1, a1}, {s3, c1}, {s4, d1}, {s2, b1}, {s5, e1}]}
-          _ -> {rem10(b, e), [{s1, a1}, {s3, c1}, {s4, d1}, {s2, b1}, {s5, e1}]}
+          true -> {10, [{a1, s1}, {c1, s3}, {d1, s4}, {b1, s2}, {e1, s5}]}
+          _ -> {rem10(b, e), [{a1, s1}, {c1, s3}, {d1, s4}, {b1, s2}, {e1, s5}]}
         end
       rem10(a, c, e) == 0 ->
         case rem10(b, d) == 0 do
-          true -> {10, [{s1, a1}, {s3, c1}, {s5, e1}, {s2, b1}, {s4, d1}]}
-          _ -> {rem10(b, d), [{s1, a1}, {s3, c1}, {s5, e1}, {s2, b1}, {s4, d1}]}
+          true -> {10, [{a1, s1}, {c1, s3}, {e1, s5}, {b1, s2}, {d1, s4}]}
+          _ -> {rem10(b, d), [{a1, s1}, {c1, s3}, {e1, s5}, {b1, s2}, {d1, s4}]}
         end
       rem10(a, d, e) == 0 ->
         case rem10(b, c) == 0 do
-          true -> {10, [{s1, a1}, {s4, d1}, {s5, e1}, {s2, b1}, {s3, c1}]}
-          _ -> {rem10(b, c), [{s1, a1}, {s4, d1}, {s5, e1}, {s2, b1}, {s3, c1}]}
+          true -> {10, [{a1, s1}, {d1, s4}, {e1, s5}, {b1, s2}, {c1, s3}]}
+          _ -> {rem10(b, c), [{a1, s1}, {d1, s4}, {e1, s5}, {b1, s2}, {c1, s3}]}
         end
       rem10(b, c, d) == 0 ->
         case rem10(a, e) == 0 do
-          true -> {10, [{s2, b1}, {s3, c1}, {s4, d1}, {s1, a1}, {s5, e1}]}
-          _ -> {rem10(a, e), [{s2, b1}, {s3, c1}, {s4, d1}, {s1, a1}, {s5, e1}]}
+          true -> {10, [{b1, s2}, {c1, s3}, {d1, s4}, {a1, s1}, {e1, s5}]}
+          _ -> {rem10(a, e), [{b1, s2}, {c1, s3}, {d1, s4}, {a1, s1}, {e1, s5}]}
         end
       rem10(b, c, e) == 0 ->
         case rem10(a, d) == 0 do
-          true -> {10, [{s2, b1}, {s3, c1}, {s5, e1}, {s1, a1}, {s4, d1}]}
-          _ -> {rem10(a, d), [{s2, b1}, {s3, c1}, {s5, e1}, {s1, a1}, {s4, d1}]}
+          true -> {10, [{b1, s2}, {c1, s3}, {e1, s5}, {a1, s1}, {d1, s4}]}
+          _ -> {rem10(a, d), [{b1, s2}, {c1, s3}, {e1, s5}, {a1, s1}, {d1, s4}]}
         end
       rem10(b, d, e) == 0 ->
         case rem10(a, c) == 0 do
-          true -> {10, [{s2, b1}, {s4, d1}, {s5, e1}, {s1, a1}, {s3, c1}]}
-          _ -> {rem10(a, c), [{s2, b1}, {s4, d1}, {s5, e1}, {s1, a1}, {s3, c1}]}
+          true -> {10, [{b1, s2}, {d1, s4}, {e1, s5}, {a1, s1}, {c1, s3}]}
+          _ -> {rem10(a, c), [{b1, s2}, {d1, s4}, {e1, s5}, {a1, s1}, {c1, s3}]}
         end
       rem10(c, d, e) == 0 ->
         case rem10(a, b) == 0 do
-          true -> {10, [{s3, c1}, {s4, d1}, {s5, e1}, {s1, a1}, {s2, b1}]}
-          _ -> {rem10(a, b), [{s3, c1}, {s4, d1}, {s5, e1}, {s1, a1}, {s2, b1}]}
+          true -> {10, [{c1, s3}, {d1, s4}, {e1, s5}, {a1, s1}, {b1, s2}]}
+          _ -> {rem10(a, b), [{c1, s3}, {d1, s4}, {e1, s5}, {a1, s1}, {b1, s2}]}
         end
-      true -> {0, [{s1, a1}, {s2, b1}, {s3, c1}, {s4, d1}, {s5, e1}]}
+      true -> {0, [{a1, s1}, {b1, s2}, {c1, s3}, {d1, s4}, {e1, s5}]}
     end
   end
   def do_get_suit_pattern(cards) do
@@ -149,13 +150,13 @@ defmodule Deck do
     rem(a + b + c, 10)
   end
 
+  defp ranks, do: Enum.to_list(1..13) |> Enum.shuffle
+
   defp suits, do: Enum.to_list(1..4) |> Enum.shuffle
 
-  defp ranks, do: Enum.to_list(1..13) |> Enum.shuffle
-  
-  defp card_to_tuple(%Deck.Card{suit: suit, rank: rank}), do: {suit, rank}
+  defp card_to_tuple(%Deck.Card{rank: rank, suit: suit}), do: {rank, suit}
 
-  defp tuple_to_card({suit, rank}), do: %Deck.Card{suit: suit, rank: rank}
+  defp tuple_to_card({rank, suit}), do: %Deck.Card{rank: rank, suit: suit}
 
 end
 
