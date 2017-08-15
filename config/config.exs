@@ -18,6 +18,17 @@ config :logger, :console,
   format: "$time $metadata[$level] $message\n",
   metadata: [:request_id]
 
+# config :bf_game, :token,
+#   url: "http://192.168.200.4:8080/v2/game/ge",
+#   md5sign: "iomsk$"
+
+config :bf_game, :queue_args,
+  port: 5672,
+  host: "127.0.0.1",
+  username: "guest",
+  password: "guest",
+  virtual_host: "/"
+
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
 import_config "#{Mix.env}.exs"

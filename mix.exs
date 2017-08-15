@@ -5,7 +5,7 @@ defmodule BfGame.Mixfile do
     [
       app: :bf_game,
       version: "0.0.1",
-      elixir: "~> 1.2",
+      elixir: "~> 1.6.0-dev",
       elixirc_paths: elixirc_paths(Mix.env),
       compilers: [:phoenix, :gettext] ++ Mix.compilers,
       build_embedded: Mix.env == :prod,
@@ -18,8 +18,10 @@ defmodule BfGame.Mixfile do
   #
   # Type `mix help compile.app` for more information.
   def application do
-    [mod: {BfGame, []},
-     applications: [:phoenix, :phoenix_pubsub, :cowboy, :logger, :gettext]]
+    [
+      mod: {BfGame, []},
+      extra_applications: [:mnesia, :logger]
+    ]
   end
 
   # Specifies which paths to compile per environment.
@@ -34,7 +36,10 @@ defmodule BfGame.Mixfile do
       {:phoenix, "~> 1.2.4"},
       {:phoenix_pubsub, "~> 1.0"},
       {:gettext, "~> 0.11"},
-      {:cowboy, "~> 1.0"}
+      {:cowboy, "~> 1.0"},
+      {:amqp, "~> 0.2.3"},
+      {:httpoison, "~> 0.13.0"},
+      {:distillery, "~> 1.4"}
     ]
   end
 end

@@ -10,6 +10,8 @@ defmodule BfGame do
     children = [
       supervisor(BfGame.Endpoint, []),
       supervisor(Registry, [:unique, MyRegistry], [id: MyRegistry]),
+      supervisor(MQ.Supervisor, []),
+      supervisor(MnesiaTab.Supervisor, []),
       supervisor(GameLogic.Supervisor, []),
       supervisor(UserMng.Supervisor, [])
     ]
