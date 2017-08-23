@@ -23,9 +23,6 @@ defmodule Tools do
     :rand.seed(:exs1024, :erlang.timestamp())
   end
 
-  def get_env(:start) do
-    Mix.env()
-  end
   def get_env(type) do
     case Application.get_env(:bf_game, type) do
       nil ->

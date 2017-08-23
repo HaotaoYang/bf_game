@@ -4,7 +4,7 @@ defmodule MQ.Sender do
   use AMQP
   require Logger
 
-  @queue_name   "rp_2_api"
+  @queue_name   "hb_2_api"
 
   ## =================================================================
   ## api
@@ -13,9 +13,17 @@ defmodule MQ.Sender do
     GenServer.start_link(__MODULE__, [mq_conn], name: :sender)
   end
 
+  ## 向mq队列发送消息，这里会阻塞直到接受到返回消息
   def send_msg(msg) do
     encode_msg = Poison.encode!(msg)
     GenServer.cast(:sender, {:send_msg, encode_msg})
+    receive do
+      {:ok, ret} -> {:ok, ret}
+      _ -> :error
+    after
+      5000 ->
+        :error
+    end
   end
 
   ## =================================================================

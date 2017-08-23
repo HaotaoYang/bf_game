@@ -14,10 +14,17 @@ use Mix.Config
 config :bf_game, BfGame.Endpoint,
   http: [port: 8888],
   url: [host: "localhost", port: 8888],
-  cache_static_manifest: "priv/static/manifest.json"
+  check_origin: false,
+  server: true,
+  root: ".",
+  version: Mix.Project.config[:version]
+  # cache_static_manifest: "priv/static/manifest.json"
 
 # Do not print debug messages in production
 config :logger, level: :info
+
+# start env
+config :bf_game, start_env: :prod
 
 # ## SSL Support
 #

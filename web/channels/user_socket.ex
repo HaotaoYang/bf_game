@@ -1,5 +1,6 @@
 defmodule BfGame.UserSocket do
   use Phoenix.Socket
+  require Logger
 
   ## Channels
   channel "lobby:*", BfGame.LobbyChannel
@@ -19,25 +20,79 @@ defmodule BfGame.UserSocket do
   #
   # See `Phoenix.Token` documentation for examples in
   # performing token verification on connect.
-  def connect(%{"user_token" => token}, socket) do
-    %{user_id: user_id, user_name: user_name} = get_user_info(token)
-    {
-      :ok,
-      socket
-      |> assign(:user_id, user_id)
-      |> assign(:user_name, user_name)
-    }
+  def connect(%{"token" => token}, socket) do
+    case get_user_info(token) do
+      %{user_id: user_id, user_name: user_name, chip: chip} = info ->
+        {:ok, _} = Registry.register(MqRegistry, user_id, "")
+        case user_login(info) do
+          {:ok, _order} ->
+            case create_user(user_id, user_name, chip) do
+              :ok -> {:ok, assign(socket, :user_id, user_id)}
+              _ -> :error
+            end
+          _ ->
+            :error
+        end
+      _ ->
+        :error
+    end
+  end
+  def connect(%{"secret" => secret}, socket) do
+    case Tools.verify_secret(secret) do
+      {:ok, user_id} ->
+        case UserMng.is_user_alive?(user_id) do
+          true -> {:ok, assign(socket, :user_id, user_id)}
+          _ -> :error
+        end
+      _ -> :error
+    end
   end
 
-  def get_user_info(token) do
-    user_id = case is_integer(token) do
-      true -> token
-      _ -> :erlang.phash2(token, 100_000)
+  defp get_user_info(token) do
+    case Tools.get_env(:start_env) do
+      :prod ->	## 生产环境
+		case Platform.HttpHandler.post(token) do
+          {:ok, info} -> info
+          _ -> :error
+        end
+      _ ->
+        user_id = case is_integer(token) do
+          true -> token
+          _ -> :erlang.phash2(token, 100_000)
+        end
+		%{
+		  user_id: user_id,
+		  user_name: "user_#{user_id}",
+		  chip: 100000
+		}
     end
-    %{
-      user_id: user_id,
-      user_name: "user_#{user_id}"
-    }
+  end
+
+  defp user_login(info) do
+    case Tools.get_env(:start_env) do
+      :prod ->  ## 生产环境
+        msg = %{
+          action: "login",
+          user_id: info.user_id
+        }
+		MQ.Sender.send_msg(msg)
+      _ ->
+        {:ok, 0}
+    end
+  end
+
+  defp create_user(user_id, user_name, chip) do
+    case UserMng.Supervisor.start_child(user_id, user_name, chip) do
+      {:ok, _pid} -> :ok
+      {:error, {:already_started, _pid}} ->
+        UserMng.kickout_user(user_id)
+        :timer.sleep(1000)
+        UserMng.Supervisor.start_child(user_id, user_name, chip)
+        :ok
+      e ->
+        Logger.error "user: #{user_id} progress start faild, reason: #{inspect(e)}"
+        :error
+    end
   end
 
   # Socket id's are topics that allow you to identify all sockets for a given user:

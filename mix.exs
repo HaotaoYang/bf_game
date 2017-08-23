@@ -5,7 +5,7 @@ defmodule BfGame.Mixfile do
     [
       app: :bf_game,
       version: "0.0.1",
-      elixir: "~> 1.6.0-dev",
+      elixir: "~> 1.5.1",
       elixirc_paths: elixirc_paths(Mix.env),
       compilers: [:phoenix, :gettext] ++ Mix.compilers,
       build_embedded: Mix.env == :prod,

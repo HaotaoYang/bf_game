@@ -6,7 +6,7 @@ defmodule MQ.RPC do
 
   defstruct [:index, :chan]
 
-  @queue_name   "api_rpc_rp"
+  @queue_name   "api_rpc_hb"
   @qos          1
 
   ## =================================================================

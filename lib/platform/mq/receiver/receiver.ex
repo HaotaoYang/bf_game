@@ -6,7 +6,7 @@ defmodule MQ.Receiver do
 
   defstruct [:index, :chan]
 
-  @queue_name   "api_2_rp"
+  @queue_name   "api_2_hb"
   @qos          1
 
   ## =================================================================
@@ -82,12 +82,27 @@ defmodule MQ.Receiver do
     chan
   end
 
+  defp handle_msg(%{"action" => "login_reply", "uid" => user_id, "order_id" => order_id}) do
+    Logger.info("receive mq msg: login_reply")
+    pid = where(user_id)
+    case is_pid(pid) do
+      true -> send(pid, {:ok, order_id})
+      _ -> :error
+    end
+  end
   # defp handle_msg(%{"action" => "robots_reply", "data" => robot_info, "pid" => pid}) do
   #   pid = :erlang.list_to_pid(:erlang.bitstring_to_list(pid))
   #   send pid, {:get_robots, robot_info}
   # end
   defp handle_msg(_msg) do
     :error
+  end
+
+  defp where(user_id) do
+    case Registry.lookup(MqRegistry, user_id) do
+      [{pid, _}] -> pid
+      _ -> nil
+    end
   end
 
 end

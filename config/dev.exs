@@ -13,6 +13,9 @@ config :bf_game, BfGame.Endpoint,
   check_origin: false,
   watchers: []
 
+# start env
+config :bf_game, start_env: :dev
+
 # Set a higher stacktrace during development. Avoid configuring such
 # in production as building large stacktraces may be expensive.
 config :phoenix, :stacktrace_depth, 20

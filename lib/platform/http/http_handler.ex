@@ -7,8 +7,8 @@ defmodule Platform.HttpHandler do
   """
   def post(token) do
     case post_to_platform(token) do
-      %HTTPoison.Response{body: body} ->
-        parse(body)
+      {:ok, %HTTPoison.Response{body: body}} ->
+        {:ok, parse(body)}
       error ->
         Logger.error "http_handler receive an error msg: #{inspect(error)}"
         :error
@@ -18,12 +18,12 @@ defmodule Platform.HttpHandler do
   defp post_to_platform(token) do
     token_config = Tools.get_env(:token)
     body = build_body(token, token_config)
-    Logger.debug "body: #{inspect(body)}"
+    Logger.info "body: #{inspect(body)}"
     HTTPoison.post token_config[:url], body
   end
 
   defp build_body(token, token_config) do
-    rand = to_string(Enum.random(1..100))
+    rand = to_string(Enum.random(1..999))
     time = to_string(Tools.time_stamp())
     {:ok, new_token} = Base.decode64(token)
     %{
@@ -36,10 +36,10 @@ defmodule Platform.HttpHandler do
 
   def parse(string) do
     {:ok, resp} = Poison.Parser.parse(string, keys: :atoms)
-    Logger.debug "parsed resp: #{inspect(resp)} "
+    Logger.info "parsed resp: #{inspect(resp)}"
     case resp.code == 0 do
       true ->
-        {:ok, resp.data}
+        resp.data
       _ ->
         Logger.error "http_handler receive an #{resp.code} msg: " <> resp.msg
         :error
