@@ -83,11 +83,12 @@ defmodule MQ.Receiver do
   end
 
   defp handle_msg(%{"action" => "login_reply", "uid" => user_id, "order_id" => order_id}) do
-    Logger.info("receive mq msg: login_reply")
     pid = where(user_id)
     case is_pid(pid) do
       true -> send(pid, {:ok, order_id})
-      _ -> :error
+      _ ->
+        Logger.error("can not find mq sender pid")
+        :error
     end
   end
   # defp handle_msg(%{"action" => "robots_reply", "data" => robot_info, "pid" => pid}) do
@@ -100,7 +101,9 @@ defmodule MQ.Receiver do
 
   defp where(user_id) do
     case Registry.lookup(MqRegistry, user_id) do
-      [{pid, _}] -> pid
+      [{pid, _}] ->
+        Registry.unregister(MqRegistry, user_id)
+        pid
       _ -> nil
     end
   end

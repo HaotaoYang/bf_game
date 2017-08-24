@@ -23,7 +23,6 @@ defmodule BfGame.UserSocket do
   def connect(%{"token" => token}, socket) do
     case get_user_info(token) do
       %{user_id: user_id, user_name: user_name, chip: chip} = info ->
-        {:ok, _} = Registry.register(MqRegistry, user_id, "")
         case user_login(info) do
           {:ok, _order} ->
             case create_user(user_id, user_name, chip) do
@@ -71,6 +70,7 @@ defmodule BfGame.UserSocket do
   defp user_login(info) do
     case Tools.get_env(:start_env) do
       :prod ->  ## 生产环境
+        {:ok, _} = Registry.register(MqRegistry, user_id, "")
         msg = %{
           action: "login",
           user_id: info.user_id

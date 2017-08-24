@@ -50,8 +50,7 @@ defmodule MQ.RPC do
             response = Poison.encode!(reply)
             Basic.publish(chan, "", meta.reply_to, "#{response}", correlation_id: meta.correlation_id)
             :ok
-          err ->
-            Logger.error("mq rpc handle_msg error: #{inspect err}")
+          _ ->
             :ok
         end
       err ->
@@ -93,6 +92,7 @@ defmodule MQ.RPC do
   #   {:ok, %{code: 0, msg: %{coin: -1, online_flg: 1, time: :os.system_time(1)}}}
   # end
   defp handle_msg(_msg) do
+    Logger.error("mq rpc handle_msg error, msg:#{inspect(msg)}")
     :error
   end
 
