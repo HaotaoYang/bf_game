@@ -28,6 +28,10 @@ defmodule MnesiaTab do
     GenServer.cast(where_is(table_name), {:offline_save, data})
   end
 
+  def load(table_name, key) do
+    GenServer.call(where_is(table_name), {:load, key})
+  end
+
   def lookup(table_name, key) do
     GenServer.call(where_is(table_name), {:lookup, key})
   end
@@ -77,7 +81,7 @@ defmodule MnesiaTab do
     {:ok, state}
   end
 
-  def handle_call({:lookup, key}, _from, %{table_name: table_name} = state) do
+  def handle_call({:load, key}, _from, %{table_name: table_name} = state) do
     ret = case :ets.lookup(table_name, key) do
       [data] -> [data]
       _ ->
@@ -88,6 +92,14 @@ defmodule MnesiaTab do
           _ ->
             []
         end
+    end
+    {:reply, ret, state}
+  end
+
+  def handle_call({:lookup, key}, _from, %{table_name: table_name} = state) do
+    ret = case :ets.lookup(table_name, key) do
+      [data] -> [data]
+      _ -> :mnesia.dirty_read(table_name, key)
     end
     {:reply, ret, state}
   end
