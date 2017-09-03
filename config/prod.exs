@@ -17,7 +17,7 @@ config :bf_game, BfGame.Endpoint,
   check_origin: false,
   server: true,
   root: ".",
-  version: Mix.Project.config[:version]
+  version: Application.spec(:bf_game, :vsn)
   # cache_static_manifest: "priv/static/manifest.json"
 
 # Do not print debug messages in production
