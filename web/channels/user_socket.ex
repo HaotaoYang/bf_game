@@ -70,12 +70,12 @@ defmodule BfGame.UserSocket do
   defp user_login(info) do
     case Tools.get_env(:start_env) do
       :prod ->  ## 生产环境
-        {:ok, _} = Registry.register(MqRegistry, user_id, "")
+        {:ok, _} = Registry.register(MqRegistry, info.user_id, "")
         msg = %{
           action: "login",
           user_id: info.user_id
         }
-		MQ.Sender.send_msg(msg)
+		MQ.Sender.send_msg(info.user_id, msg)
       _ ->
         {:ok, 0}
     end

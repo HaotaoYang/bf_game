@@ -101,9 +101,7 @@ defmodule MQ.Receiver do
 
   defp where(user_id) do
     case Registry.lookup(MqRegistry, user_id) do
-      [{pid, _}] ->
-        Registry.unregister(MqRegistry, user_id)
-        pid
+      [{pid, _}] -> pid
       _ -> nil
     end
   end
