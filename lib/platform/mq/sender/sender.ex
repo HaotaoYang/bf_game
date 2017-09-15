@@ -22,9 +22,11 @@ defmodule MQ.Sender do
         Registry.unregister(MqRegistry, registry_key)
         {:ok, ret}
       _ ->
+        Registry.unregister(MqRegistry, registry_key)
         :error
     after
       5000 ->
+        Registry.unregister(MqRegistry, registry_key)
         :error
     end
   end
