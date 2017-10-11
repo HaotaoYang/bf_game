@@ -8,20 +8,20 @@ defmodule Deck do
   4. 黑桃         4
 
   牌型定义：
-  1. 五小牛       13
-  2. 五花牛       12
-  3. 炸弹         11
-  4. 牛牛         10
-  5. 牛九          9
-  6. 牛八          8
-  7. 牛七          7
-  8. 牛六          6
-  9. 牛五          5
-  10.牛四          4
-  11.牛三          3
-  12.牛二          2
-  13.牛丁          1
-  14.没牛          0
+  1. 五小牛       13      6倍
+  2. 五花牛       12      5倍
+  3. 炸弹         11      4倍
+  4. 牛牛         10      3倍
+  5. 牛九          9      2倍
+  6. 牛八          8      2倍
+  7. 牛七          7      2倍
+  8. 牛六          6      1倍
+  9. 牛五          5      1倍
+  10.牛四          4      1倍
+  11.牛三          3      1倍
+  12.牛二          2      1倍
+  13.牛丁          1      1倍
+  14.没牛          0      1倍
   """
 
   defmodule Card do
@@ -44,6 +44,30 @@ defmodule Deck do
     [suit, rank] = Integer.digits(n, 16)
     %Deck.Card{rank: rank, suit: suit}
   end
+
+  @doc """
+  根据牌型获取庄家赢的倍数
+  """
+  def get_dealer_multiple(13), do: 6
+  def get_dealer_multiple(12), do: 5
+  def get_dealer_multiple(11), do: 4
+  def get_dealer_multiple(10), do: 3
+  def get_dealer_multiple(9), do: 2
+  def get_dealer_multiple(8), do: 2
+  def get_dealer_multiple(7), do: 2
+  def get_dealer_multiple(_), do: 1
+
+  @doc """
+  根据牌型获取玩家赢的倍数
+  """
+  def get_user_multiple(13), do: 5.7
+  def get_user_multiple(12), do: 4.75
+  def get_user_multiple(11), do: 3.8
+  def get_user_multiple(10), do: 2.85
+  def get_user_multiple(9), do: 1.9
+  def get_user_multiple(8), do: 1.9
+  def get_user_multiple(7), do: 1.9
+  def get_user_multiple(_), do: 0.95
 
   def get_suit_pattern(cards) do
     cards
@@ -80,48 +104,48 @@ defmodule Deck do
         end
       rem10(a, b, d) == 0 ->
         case rem10(c, e) == 0 do
-          true -> {10, [{a1, s1}, {b1, s2}, {d1, s4}, {c1, s3}, {e1, s5}]}
-          _ -> {rem10(c, e), [{a1, s1}, {b1, s2}, {d1, s4}, {c1, s3}, {e1, s5}]}
+          true -> {10, [{a1, s1}, {b1, s2}, {c1, s3}, {d1, s4}, {e1, s5}]}
+          _ -> {rem10(c, e), [{a1, s1}, {b1, s2}, {c1, s3}, {d1, s4}, {e1, s5}]}
         end
       rem10(a, b, e) == 0 ->
         case rem10(c, d) == 0 do
-          true -> {10, [{a1, s1}, {b1, s2}, {e1, s5}, {c1, s3}, {d1, s4}]}
-          _ -> {rem10(c, d), [{a1, s1}, {b1, s2}, {e1, s5}, {c1, s3}, {d1, s4}]}
+          true -> {10, [{a1, s1}, {b1, s2}, {c1, s3}, {d1, s4}, {e1, s5}]}
+          _ -> {rem10(c, d), [{a1, s1}, {b1, s2}, {c1, s3}, {d1, s4}, {e1, s5}]}
         end
       rem10(a, c, d) == 0 ->
         case rem10(b, e) == 0 do
-          true -> {10, [{a1, s1}, {c1, s3}, {d1, s4}, {b1, s2}, {e1, s5}]}
-          _ -> {rem10(b, e), [{a1, s1}, {c1, s3}, {d1, s4}, {b1, s2}, {e1, s5}]}
+          true -> {10, [{a1, s1}, {b1, s2}, {c1, s3}, {d1, s4}, {e1, s5}]}
+          _ -> {rem10(b, e), [{a1, s1}, {b1, s2}, {c1, s3}, {d1, s4}, {e1, s5}]}
         end
       rem10(a, c, e) == 0 ->
         case rem10(b, d) == 0 do
-          true -> {10, [{a1, s1}, {c1, s3}, {e1, s5}, {b1, s2}, {d1, s4}]}
-          _ -> {rem10(b, d), [{a1, s1}, {c1, s3}, {e1, s5}, {b1, s2}, {d1, s4}]}
+          true -> {10, [{a1, s1}, {b1, s2}, {c1, s3}, {d1, s4}, {e1, s5}]}
+          _ -> {rem10(b, d), [{a1, s1}, {b1, s2}, {c1, s3}, {d1, s4}, {e1, s5}]}
         end
       rem10(a, d, e) == 0 ->
         case rem10(b, c) == 0 do
-          true -> {10, [{a1, s1}, {d1, s4}, {e1, s5}, {b1, s2}, {c1, s3}]}
-          _ -> {rem10(b, c), [{a1, s1}, {d1, s4}, {e1, s5}, {b1, s2}, {c1, s3}]}
+          true -> {10, [{a1, s1}, {b1, s2}, {c1, s3}, {d1, s4}, {e1, s5}]}
+          _ -> {rem10(b, c), [{a1, s1}, {b1, s2}, {c1, s3}, {d1, s4}, {e1, s5}]}
         end
       rem10(b, c, d) == 0 ->
         case rem10(a, e) == 0 do
-          true -> {10, [{b1, s2}, {c1, s3}, {d1, s4}, {a1, s1}, {e1, s5}]}
-          _ -> {rem10(a, e), [{b1, s2}, {c1, s3}, {d1, s4}, {a1, s1}, {e1, s5}]}
+          true -> {10, [{a1, s1}, {b1, s2}, {c1, s3}, {d1, s4}, {e1, s5}]}
+          _ -> {rem10(a, e), [{a1, s1}, {b1, s2}, {c1, s3}, {d1, s4}, {e1, s5}]}
         end
       rem10(b, c, e) == 0 ->
         case rem10(a, d) == 0 do
-          true -> {10, [{b1, s2}, {c1, s3}, {e1, s5}, {a1, s1}, {d1, s4}]}
-          _ -> {rem10(a, d), [{b1, s2}, {c1, s3}, {e1, s5}, {a1, s1}, {d1, s4}]}
+          true -> {10, [{a1, s1}, {b1, s2}, {c1, s3}, {d1, s4}, {e1, s5}]}
+          _ -> {rem10(a, d), [{a1, s1}, {b1, s2}, {c1, s3}, {d1, s4}, {e1, s5}]}
         end
       rem10(b, d, e) == 0 ->
         case rem10(a, c) == 0 do
-          true -> {10, [{b1, s2}, {d1, s4}, {e1, s5}, {a1, s1}, {c1, s3}]}
-          _ -> {rem10(a, c), [{b1, s2}, {d1, s4}, {e1, s5}, {a1, s1}, {c1, s3}]}
+          true -> {10, [{a1, s1}, {b1, s2}, {c1, s3}, {d1, s4}, {e1, s5}]}
+          _ -> {rem10(a, c), [{a1, s1}, {b1, s2}, {c1, s3}, {d1, s4}, {e1, s5}]}
         end
       rem10(c, d, e) == 0 ->
         case rem10(a, b) == 0 do
-          true -> {10, [{c1, s3}, {d1, s4}, {e1, s5}, {a1, s1}, {b1, s2}]}
-          _ -> {rem10(a, b), [{c1, s3}, {d1, s4}, {e1, s5}, {a1, s1}, {b1, s2}]}
+          true -> {10, [{a1, s1}, {b1, s2}, {c1, s3}, {d1, s4}, {e1, s5}]}
+          _ -> {rem10(a, b), [{a1, s1}, {b1, s2}, {c1, s3}, {d1, s4}, {e1, s5}]}
         end
       true -> {0, [{a1, s1}, {b1, s2}, {c1, s3}, {d1, s4}, {e1, s5}]}
     end
