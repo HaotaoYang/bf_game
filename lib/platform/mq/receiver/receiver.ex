@@ -85,7 +85,7 @@ defmodule MQ.Receiver do
   defp handle_msg(%{"action" => "login_reply", "uid" => user_id, "order_id" => order_id}) do
     pid = where(user_id)
     case is_pid(pid) do
-      true -> send(pid, {:ok, order_id})
+      true -> send(pid, {:mq_reply, order_id})
       _ ->
         Logger.error("can not find mq sender pid")
         :error

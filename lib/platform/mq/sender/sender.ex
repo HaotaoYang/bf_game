@@ -14,19 +14,22 @@ defmodule MQ.Sender do
   end
 
   ## 向mq队列发送消息，这里会阻塞直到接受到返回消息
-  def send_msg(registry_key, msg) do
+  def send_msg(register_key, msg) do
     encode_msg = Poison.encode!(msg)
     GenServer.cast(:sender, {:send_msg, encode_msg})
+    receive_msg(register_key)
+  end
+  
+  def receive_msg(register_key) do
     receive do
-      {:ok, ret} ->
-        Registry.unregister(MqRegistry, registry_key)
+      {:mq_reply, ret} ->
+        Registry.unregister(MqRegistry, register_key)
         {:ok, ret}
       _ ->
-        Registry.unregister(MqRegistry, registry_key)
-        :error
+        receive_msg(register_key)
     after
       5000 ->
-        Registry.unregister(MqRegistry, registry_key)
+        Registry.unregister(MqRegistry, register_key)
         :error
     end
   end
