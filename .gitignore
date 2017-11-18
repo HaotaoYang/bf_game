@@ -4,9 +4,9 @@ pp artifacts
 /deps
 /*.ez
 /priv
-/rel
 /Mnesia*
 /tar*
+/var*
 
 # Generated on crash by the VM
 erl_crash.dump

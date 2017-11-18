@@ -25,9 +25,27 @@ config :bf_game, :queue_args,
   virtual_host: "/"
 
 # Configures Elixir's Logger
+# 指定日志的输出方式[控制台(默认)，FileLogger]
+config :logger,
+  backends: [:console, FileLogger]
+
+# 控制台日志的配置
 config :logger, :console,
-  format: "$time $metadata[$level] $message\n",
-  metadata: [:request_id]
+  format: "$date $time $metadata[$level] $levelpad$message\n",
+  metadata: [:module, :line]
+
+# FileLogger日志的配置
+config :logger, FileLogger,
+  format: "$date $time $metadata[$level] $levelpad$message\n",
+  metadata: [:module, :line],
+  path: "var/log"
+
+config :mnesia,
+  dc_dump_limit: 100,
+  dump_log_write_threshold: 50000,
+  dump_log_time_threshold: 300000
+
+config :sasl, errlog_type: :error
 
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.

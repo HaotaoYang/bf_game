@@ -91,7 +91,7 @@ defmodule MQ.RPC do
   # defp handle_msg(%{"action" => "kick", "uid" => uid, "order_id" => order_id}) do
   #   {:ok, %{code: 0, msg: %{coin: -1, online_flg: 1, time: :os.system_time(1)}}}
   # end
-  defp handle_msg(_msg) do
+  defp handle_msg(msg) do
     Logger.error("mq rpc handle_msg error, msg:#{inspect(msg)}")
     :error
   end

@@ -24,6 +24,11 @@ defmodule BfGame do
     Supervisor.start_link(children, opts)
   end
 
+  def pre_stop() do
+    # TODO do something before server stop
+    :ok
+  end
+
   def stop(what) do
     Logger.warn "============= server stop =============, what: #{inspect what}"
     # TODO do something before server stop
